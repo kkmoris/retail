@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>零售系統升級之「四階段藍圖與架構備忘錄」</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f7fafc;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 26px;
+        }
+        h2 {
+            color: #2b6cb0;
+            margin-top: 32px;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+            font-size: 20px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #2b6cb0;
+        }
+        .warning-box {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #9c4221;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .tag-phase1 { background-color: #e53e3e; }
+        .tag-phase2 { background-color: #dd6b20; }
+        .tag-phase3 { background-color: #3182ce; }
+        .tag-phase4 { background-color: #805ad5; }
+
+/* 瀏覽器播放與列印全域浮水印：陳勇至 (Moris) 規劃 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none; /* 穿透點擊，完全不干擾滑鼠點選與選取 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.08' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+  background-repeat: repeat;
+}
+@media print {
+  body::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>零售系統升級 Cutover 藍圖與架構備忘錄</h1>
+        
+        <div class="highlight-box">
+            <strong>核心戰略指導原則：</strong><br>
+            「Phase 1 前線 POS 與 APP 會員體驗閉環；Phase 2 解鎖 EC 與訂單中台（OMO 融合行銷引擎）；過渡期後端財務採報表驅動人工登打；Phase 3 全面導入新 GL 與自動化傳票；Phase 4 邁向 AI 全通路賦能。」
+        </div>
+
+        <h2>一、 四階段系統上線與模組歸位總覽</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="15%">上線階段</th>
+                    <th width="42%">涵蓋模組與中台範疇</th>
+                    <th width="43%">核心目標與實務策略</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="tag tag-phase1">第一階段</span><br><strong>Phase 1</strong></td>
+                    <td>
+                        • 合約與專櫃營運系統<br>
+                        • 自營商品主檔與期初庫存<br>
+                        • 會員與券類資料開帳<br>
+                        • POS 前台系統 & 即時業績 (讀寫分離)<br>
+                        • <strong>百貨 APP (館內數位體驗 / 會員載具)</strong><br>
+                        • <strong>五大核心中台</strong>：<br>
+                          &nbsp;&nbsp;1. CRM 中台 (會員)<br>
+                          &nbsp;&nbsp;2. 贈品中台 (促銷/券)<br>
+                          &nbsp;&nbsp;3. 支付中台 (金流/實收)<br>
+                          &nbsp;&nbsp;4. 發票中台 (字軌/加值中心)<br>
+                          &nbsp;&nbsp;5. 專櫃對帳中台 (每日日結)
+                    </td>
+                    <td>
+                        <strong>館內營運與 APP 會員體驗閉環：</strong><br>
+                        確保 Phase 1 正式開機當下的現場消費、APP 掃碼積點、領券、綁定 Pay 支付、發票開立與停車折抵萬無一失。樓管與高層即時監控全館業績，專櫃完成每日清機日結。
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-phase2">第二階段</span><br><strong>Phase 2</strong></td>
+                    <td>
+                        • <strong>EC 電商平台 (官網 / APP 線上購物館)</strong><br>
+                        • <strong>第六大中台：訂單中台 (Order Hub / OMS)</strong><br>
+                          &nbsp;&nbsp;└ <i>OMO 融合行銷計算引擎 & 智慧履約路由</i><br>
+                        • 請採驗系統 (PR/PO/GR/AP)<br>
+                        • 專櫃月結拆帳系統 (SOA)<br>
+                        • AP (應付) / AR (應收) / 出納模組<br>
+                        • <strong>過渡期對應策略</strong>：<br>
+                          &nbsp;&nbsp;採新系統產出「財務專用會計彙總報表」，由會計人員於舊財務系統手動登打傳票。
+                    </td>
+                    <td>
+                        <strong>全通路 OMO 購物、訂單路由與供應鏈清算：</strong><br>
+                        啟用 EC 與訂單中台，實現 OMO 跨通路行銷計算（跨通路滿額贈/折抵）、門市取貨（BOPIS）與專櫃導購抽成。同步處理自營進驗收、廠商請款、專櫃 SOA 拆帳與資金收支。
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-phase3">第三階段</span><br><strong>Phase 3</strong></td>
+                    <td>
+                        • 財務系統 (GL - 專注總帳關帳與財報)<br>
+                        • 稅務申報模組 (45 報表)<br>
+                        • HRM 人資與考勤模組<br>
+                        • 自營盤點模組 (Stocktake)<br>
+                        • 資產管理模組 (Asset Management - 獨立生財器具與設備列管)<br>
+                        • 場域智慧物業 (人流/巡檢/能源)<br>
+                        • 歷史數據中台與 BI 戰情室
+                    </td>
+                    <td>
+                        <strong>總帳自動化與實體資產監控：</strong><br>
+                        正式啟用新財務總帳（GL），匯入期初調整分錄，全面串接自動化傳票與報表產出。同步完成自營實體盤點、生財器具資產列管、HR 薪資與智慧場域監控。
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-phase4">第四階段</span><br><strong>Phase 4</strong></td>
+                    <td>
+                        • <strong>AI 應用中台 / LLM & ML 服務</strong><br>
+                        • 智慧化 Agent 應用與進階預測模型
+                    </td>
+                    <td>
+                        <strong>AI 賦能與數位飛輪：</strong><br>
+                        基於前三階段沉澱的全通路海量數據（POS + APP + EC），全面導入 LLM 智慧客服、會員精準推薦與智慧營運決策支援。
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>二、 核心架構鐵律總結</h2>
+        <div class="warning-box">
+            <strong>1. APP 與 EC 職責分工：</strong>APP 屬 Phase 1，聚焦於實體館內「會員身份識別、贈券與支付」；EC 屬 Phase 2，聚焦於「線上購物與 OMO 全通路庫存履約」。<br><br>
+            <strong>2. 訂單中台的戰略定位：</strong>訂單中台（Order Hub）不只是 OMS 履約工具，更是執行 OMO 跨通路優惠疊加計算、滿額贈試算與專櫃導購業績歸屬的核心大腦。<br><br>
+            <strong>3. 務實的財務過渡期：</strong>Phase 2 新舊銜接期，採「會計彙總報表 + 人工登打」過渡，待 Phase 3 新 GL 上線後全面啟動自動化拋轉。
+        </div>
+    </div>
+</body>
+</html>

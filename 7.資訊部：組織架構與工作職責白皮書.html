@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>環球資訊部：組織架構、工作職責與數位治理白皮書（含人機協同 AI 體系）</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f7fafc;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 48px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 26px;
+        }
+        h2 {
+            color: #2b6cb0;
+            margin-top: 36px;
+            border-left: 5px solid #3182ce;
+            padding-left: 12px;
+            font-size: 20px;
+        }
+        h3 {
+            color: #2c5282;
+            margin-top: 24px;
+            font-size: 16px;
+        }
+        p, li {
+            font-size: 15px;
+        }
+        ul, ol {
+            padding-left: 22px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .quote-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #2b6cb0;
+            font-weight: 500;
+        }
+        .ascii-box {
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background-color: #edf2f7;
+            padding: 18px;
+            border-radius: 8px;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 13px;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .highlight {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-box {
+            background-color: #fff5f5;
+            border-left: 4px solid #e53e3e;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .ai-badge {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        /* 全域浮水印設計：陳勇至 (Moris) 規劃 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999999;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.07' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+            background-repeat: repeat;
+        }
+        @media print {
+            body::before {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>環球資訊部：組織架構、工作職責與數位治理白皮書</h1>
+        
+        <div class="quote-box">
+            「信任專業、充分授權、頂天扛責、拒絕冗會。管人重在培育與當責、管事重在架構與效率、管物則交給制度與系統；以人機協同倍增產能，透過彈性高效的數位治理驅動企業戰略成長。」
+        </div>
+
+        <h2>一、 組織架構總覽（精實鐵三角 + 人機協同 AI 體系）</h2>
+        <p>資訊部維持精實編制，不設立冗員。對外實施實體硬體外包，對內實施總部中樞掌控。本架構全面導入<strong>「人機協同（Human-in-the-Loop, HITL）」數位勞動力</strong>，為每個關鍵組別配置 24 小時專屬虛擬 AI 工程師，百倍放大工程師產能，以極致精實的人力駕馭大規模商場 IT 營運：</p>
+        
+        <div class="ascii-box">
+                               【資訊主管 (CIO/CTO)】
+                                         │
+                         ┌───────────────┴───────────────┐
+                         │ 【主管助理 / ISMS 管理專員】    │ ◄── [虛擬合規助理 AI]
+                         └───────────────┬───────────────┘
+                ┌────────────────────────┼────────────────────────┐
+                ▼                        ▼                        ▼
+     【基礎設施維運組 (Infra)】  【軟體應用組 (Software)】   【資訊安全組 (Security)】
+       • 實體網管/伺服器工程師    • 實體業務/軟體工程師       • 實體資安/合規專員
+                ▲                        ▲                        ▲
+                │ (人機協同賦能)          │ (人機協同賦能)          │ (AI 弱掃與防禦)
+        ┌───────┴───────┐        ┌───────┴───────┐        ┌───────┴───────┐
+        │ 虛擬維運工程師 │        │ 虛擬程式設計師 │        │ 虛擬資安助理   │
+        │ (AI Ops Copilot)│       │ (AI Dev Copilot)│      │(AI Sec Agent) │
+        └───────────────┘        └───────────────┘        └───────────────┘
+        </div>
+        <p style="text-align: center; font-size: 13px; color: #718096; margin-top: 8px;"><em>(註：落實「全員皆客服（SPOC）」與主次兼任制，搭配虛擬 AI 工程師 24 小時常駐輔助，一般問題即時分流、重大問題主責主辦)</em></p>
+
+        <h2>二、 各組別核心職責與虛擬 AI 工程師協同機制</h2>
+
+        <h3>1. 主管助理暨 ISMS 管理專員（行政與資產中樞） <span class="ai-badge">協同：虛擬合規助理</span></h3>
+        <ul>
+            <li><strong>ISMS 與合規管理</strong>：擔任 ISO 四階文件（品質/資安手冊、程序書、作業指導書、表單記錄）的版本控管與中樞窗口，定期追蹤弱點修復表與資產清冊，主導外部稽核準備與缺失追蹤。</li>
+            <li><strong>資產總冊統籌</strong>：不直接搬動硬體，但透過系統與各組回報，統籌全公司 IT 軟硬體資產總冊、合約到期清單與授權控管。</li>
+            <li><strong>主管參謀與機動支援</strong>：負責重大會議記錄、IT 預算執行追蹤、採購合約用印初審、外包請款審核，解放主管戰略心力並提供跨組彈性支援。</li>
+            <li><strong>虛擬合規助理賦能</strong>：
+                <ul>
+                    <li>自動比對資安弱掃報告與內部資產清冊，快速產出修復追蹤清單。</li>
+                    <li>協助 ISO 27001 / ISO 42001 評鑑資料之目錄編排、審查缺漏標註與合規進度自動化整理。</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>2. 基礎設施維運組 (Infra 組) <span class="ai-badge">協同：虛擬維運工程師 (AI Ops)</span></h3>
+        <ul>
+            <li><strong>核心定位</strong>：專責總部與全館網路、伺服器及數據備份，不直接處理分店終端硬體維修。</li>
+            <li><strong>網管與核心系統</strong>：維護總部機房核心網路、Core Switch、防火牆、對外專線、分店 Wi-Fi 訊號、AD 網域、M365/Email、內部檔案伺服器、虛擬化主機（VMware/Hyper-V）。</li>
+            <li><strong>備份與實兵災難復原（DR 鐵律）</strong>：牢牢掌握全系統（含外包系統）的資料庫備份與 VM 快照主權；於 ISO 程序書中明定<strong>「每半年強制進行一次實兵災難復原演練（Drill）」</strong>，確保極端狀況下的業務持續運作能力（BCP）。</li>
+            <li><strong>硬體資產認養與 SLA 監督</strong>：負責機房伺服器與網路設備的實體維護，管理分店 POS、EDC 等硬體外包廠商之修復時效與維護驗收。</li>
+            <li><strong>虛擬維運工程師賦能</strong>：
+                <ul>
+                    <li><strong>全天候日誌快篩（Log Parsing）</strong>：自動分析核心 Switch、防火牆與主機日誌，秒級提煉異常摘要，主動告警。</li>
+                    <li><strong>智慧派工分流（Smart Helpdesk）</strong>：第一線終端問題（如網路、印表機異常）由 AI 依據知識庫自動提供排除指引，過濾 60% 重複性提問。</li>
+                    <li><strong>災防巡檢腳本生成</strong>：輔助工程師自動生成 PowerShell/Shell 備份校驗與主機巡檢腳本。</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>3. 軟體應用組 (Software 組) <span class="ai-badge">協同：虛擬程式設計師 (AI Dev)</span></h3>
+        <ul>
+            <li><strong>核心定位</strong>：掌控專櫃抽成邏輯、POS 交易流、日結/月結帳務，落實外包軟體監督與 UAT 驗證。</li>
+            <li><strong>高階查案與數據鑑識（核心能力）</strong>：具備 SQL 查詢與 Log 逆向追蹤能力，第一時間以真實數據定位異常，杜絕廠商甩鍋。</li>
+            <li><strong>第三方外包商（Vendor）生命週期管理</strong>：嚴格規範外包商遠端維護必須走 VPN + 雙因素驗證（MFA）並全程錄影，嚴禁將正式個資攜出；外包程式碼交付皆須納入變更管理程序。</li>
+            <li><strong>測試環境與變更管控（Sandbox & UAT）</strong>：嚴格執行 UAT 測試、檔期前 7 天系統凍結（Freeze Period）與 Rollback 機制。</li>
+            <li><strong>虛擬程式設計師賦能</strong>：
+                <ul>
+                    <li><strong>自然語言轉 SQL 查案（查帳神隊友）</strong>：工程師下達營運查詢指令，AI 瞬間產出精準 SQL 語法與透視比對，查案效率提升 80%。</li>
+                    <li><strong>API 介面與資料格式轉換（ETL Scripting）</strong>：在前台 POS 與後端 ERP 對接過渡期，自動生成 CSV/TXT/JSON 格式轉譯與驗證代碼。</li>
+                    <li><strong>外包程式碼與 Patch 預先審查</strong>：針對廠商交付的 Patch 與 SQL Script 進行靜態檢查，自動揪出死鎖（Deadlock）與效能低落隱患。</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>4. 資訊安全組 (Security 組) —— 企業營運的煞車皮與護城河 <span class="ai-badge">協同：虛擬資安助理</span></h3>
+        <ul>
+            <li><strong>核心定位</strong>：獨立於維運與開發之外，專責資安防禦、滲透稽核與法規合規。</li>
+            <li><strong>基礎與端點資安防護</strong>：管理防火牆策略、WAF、入侵偵測與全企業端點資安防護（EDR），防止勒索軟體入侵。</li>
+            <li><strong>個資隱私與支付合規</strong>：確保會員個資與交易數據之儲存加密、去識別化與存取調閱審核，協助符合 PCI-DSS 要求。</li>
+            <li><strong>漏洞掃描與外包審查</strong>：定期執行弱點掃描，嚴格審查外部系統整合 API 與程式交付物。</li>
+            <li><strong>資安一票否決權（Red Line）</strong>：<strong>「未通過資安弱掃與合規審查的系統，絕對不准上線（Production）」</strong>，由主管親自背書扛壓。</li>
+            <li><strong>虛擬資安助理賦能</strong>：即時監控外部威脅情報（CTI）、分析可疑端點告警，並在模擬釣魚郵件演練中自動化評估同仁防護意識。</li>
+        </ul>
+
+        <h2>三、 管理風格與領導哲學（管人與管事）</h2>
+
+        <h3>1. 尊重專業與充分授權</h3>
+        <ul>
+            <li><strong>專家定位</strong>：每位工程師在其負責的領域都應比主管更專精。主管提供巨集觀視野與戰略方向，不干涉微觀技術細節。</li>
+            <li><strong>自主決策</strong>：工程師面對日常營運與故障排除擁有完全自主裁決權，不需要事事請示，鼓勵在第一線果斷排除問題。</li>
+        </ul>
+
+        <h3>2. 主管的當責與防護網（Leader-as-Shield）</h3>
+        <ul>
+            <li><strong>有功歸屬、過錯我扛</strong>：榮耀歸於前線同仁；面對跨部門質疑或外部壓力，由主管站在最前線扛責，並引導團隊從失敗與復盤中汲取技術複利。</li>
+            <li><strong>帶方案來討論</strong>：拒絕「伸手牌」與盲目交差，同仁尋求協助時須提出專業評估與具體處置建議（A/B 方案），培養主人翁精神。</li>
+        </ul>
+
+        <h3>3. 拒絕冗長會議，追求日常敏捷</h3>
+        <ul>
+            <li>反對形式主義的大型流水帳會議；大小決策在日常中透過即時對焦快速拍板，將寶貴時間還給工程師的專注開發心流。</li>
+        </ul>
+
+        <h3>4. 持續自我充實與「知識內化迴圈」</h3>
+        <ul>
+            <li>公司全力支持公費進修與考照；受訓同仁必須透過內部技術分享或文件化，將知識傳授給其他夥伴，實現技術資產共享與跨領域支援能力。</li>
+        </ul>
+
+        <h3>5. 全面推動 AI 協同作業與人機協同治理（HITL 原則）</h3>
+        <ul>
+            <li><strong>「AI 提議，人類當責（AI Proposes, Human Disposes）」</strong>：虛擬工程師產出之 SQL 語法、配置代碼或排除指令，一律經實體工程師 Review 簽核後方可執行，嚴禁 AI 自主修改 Production 資料庫。</li>
+            <li><strong>私有隔離與營業秘密保護</strong>：所有 AI 應用嚴格運行於企業私有或隔離環境，禁止將未遮罩的會員個資、營業額及財務數據外拋至公開外部模型。</li>
+        </ul>
+
+        <h2>四、 跨部門戰略與治理平台（高效彈性機制）</h2>
+        <p>為確保高階經營層對齊、資安防禦落實與 AI 技術創新，設立以下實質運作機制（全數明定於 ISO 管理程序中）：</p>
+        <ul>
+            <li><strong>數位轉型暨 IT 戰略推進會（含 AI 協同對焦）</strong>：定期向高層及各部門主管報告專案進度、預算與風險。初期 AI 應用的推動成果與實戰案例在此會中合併對焦，避免形式主義的冗長會議。</li>
+            <li><strong>資安治理與風險管理委員會</strong>：由資訊主管（CIO/CTO）兼任召集人，結合相關權責主管，嚴格把關重大系統上線的資安一票否決權。</li>
+            <li><strong>重大檔期戰情應變與值班機制</strong>：針對百貨週年慶或連假大促，建立前線 IT 駐點/熱線輪班機制，並嚴格執行檔期前 7 天系統凍結，確保營運萬無一失。</li>
+            <li><strong>跨部門個資委員會之邊界劃分</strong>：全公司之「個資保護與隱私委員會（涵蓋數位與實體紙本摸彩券、合約等）」由<strong>法務/法遵/稽核部門</strong>主導，資訊部僅負責「數位資料與系統端」的技術支援與資安合規。</li>
+            <li><strong>服務申請與派工機制（無單不做）</strong>：全面透過 BPM 系統簽核收單，拒絕 Line 私訊與口頭交辦；全體工程師落實「全員皆客服（SPOC）」，透過系統派工實現透明稽核。</li>
+        </ul>
+
+        <h2>五、 資產治理與「管物」哲學（拒絕人肉盤點）</h2>
+        <p>主管雖不喜繁瑣的實體資產庶務，但透過制度與系統化設計，確保萬無一失：</p>
+        <ul>
+            <li><strong>以系統取代人工</strong>：全面導入 ITAM 資產管理系統與 BPM 單據串聯，設備申購、驗收、入庫、派發全程數位化，拒絕手動 Excel 記帳。</li>
+            <li><strong>權責分工與認養制</strong>：實體設備與合約依據組別屬性由各組認養（Infra 顧機房硬體、軟體/助理顧授權與合約清冊），主管只看總表與報表。</li>
+            <li><strong>自動化合約與授權警示</strong>：軟硬體維護合約、網域憑證（SSL）、微軟/資料庫授權到期日前 60 天由系統自動發信警示負責人與主管助理，杜絕過期盲點。</li>
+        </ul>
+
+        <h2>六、 潛在盲點風險與防護機制（Guardrails）</h2>
+        <div class="warning-box">
+            <ul>
+                <li><strong>資淺同仁的適應障礙</strong>：針對新進同仁初期採取「導師制與雙週對焦」，引導其建立獨立思考與產出方案的能力。</li>
+                <li><strong>資訊不對稱與黑箱防範</strong>：以「每週 15 分鐘非正式站立短會」取代長會議，確保各組重大變更與踩坑經驗即時對齊。</li>
+                <li><strong>跨組協作真空地帶</strong>：善用「主管助理」作為 ISO 文件與合規雷達，主動盯哨跨組專案進度，防止跨領域案件互相推託。</li>
+                <li><strong>消除單點故障（SPOF）</strong>：落實「主次負責制（Primary & Secondary Ownership）」，每位工程師配置主責領域（70% 深度）與次要領域（30% 廣度），確保關鍵時刻隨時有備援戰力接手。</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

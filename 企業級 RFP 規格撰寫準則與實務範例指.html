@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>企業級容器化（Docker）架構策略與選商指南</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #0284c7;
+      --accent: #b91c1c;
+      --success: #15803d;
+      --warning: #b45309;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-dark: #0f172a;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2.5rem 1rem;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: #64748b;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    h2 {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .term-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--secondary);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .term-title {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.05rem;
+      margin-bottom: 0.35rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-primary { background: #dbeafe; color: #1d4ed8; }
+    .badge-success { background: #dcfce7; color: var(--success); }
+    .badge-warning { background: #fef3c7; color: var(--warning); }
+    .badge-alert { background: #fee2e2; color: var(--accent); }
+    
+    ol, ul {
+      padding-left: 1.25rem;
+      margin: 0.5rem 0;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+    .highlight {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .note-box {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+    }
+    .code-diagram {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 0.85rem 1.1rem;
+      border-radius: 6px;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>企業級容器化（Docker）架構策略與選商評鑑準則</h1>
+    <p class="subtitle">從環境復原、跨雲移植、測試沙盒到 RFP 規格要求的完整實務整理</p>
+  </header>
+
+  <!-- 本質釐清：VM vs Docker -->
+  <section class="card">
+    <h2>1. 核心本質釐清：虛擬機器（VM）vs. 容器（Container）</h2>
+    <p>
+      主機環境難以還原的根本原因在於<strong>「環境漂移（Configuration Drift）」</strong>與<strong>「相依性地獄」</strong>。Docker 並非另一種 VM，而是將應用程式與其所需相依函式庫封裝的標準化單元。
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>評估維度</th>
+          <th>傳統虛擬機器（VM / Image 備份）</th>
+          <th>容器化技術（Docker / Container）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="highlight">核心架構</span></td>
+          <td>包含完整 Guest OS 核心、虛擬硬體驅動、開機引導程式。</td>
+          <td><strong>共享宿主機 OS 核心</strong>，僅封裝應用程式與專屬二進位依賴檔。</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">體積與資源</span></td>
+          <td>巨大（動輒 20GB ～ 100GB），啟動需 2～5 分鐘。</td>
+          <td><strong>極輕量（數十 MB 至數百 MB）</strong>，秒級（&lt; 5 秒）冷啟動完成。</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">維運哲學</span></td>
+          <td><strong>「寵物模式（Pets）」</strong>：手動細心調校維護，壞了需耗時搶修。</td>
+          <td><strong>「免洗零件（Cattle）」</strong>：無狀態化設計，故障直接銷毀重拉。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 系統可行性檢驗 -->
+  <section class="card">
+    <h2>2. 容器化適用性檢驗：哪些主機能封裝？</h2>
+    <div class="term-box">
+      <div class="term-title">① Linux 主機體系：成熟度 &gt; 95%（最佳首選）</div>
+      <p>Python、Node.js、Java、Go、.NET Core、PHP 開發的中台 API、微服務、Nginx 代理，皆可無痛且標準化打包為 Linux 容器。</p>
+    </div>
+
+    <div class="term-box">
+      <div class="term-title">② 新一代 Windows 軟體（.NET 6 / 7 / 8+）：直接跨平台遷移</div>
+      <p>現代化 .NET 具備跨平台編譯能力，建議直接產出為 Linux Docker 映像檔，省去昂貴的微軟授權費並提升調度彈性。</p>
+    </div>
+
+    <div class="term-box">
+      <div class="term-title" style="color: var(--accent);">③ 傳統 Windows 遺留主機（Legacy Windows）：嚴格受限</div>
+      <p>
+        舊版 .NET Framework 4.x、ASP、VB6 或仰賴桌面視窗（GUI）、特定實體加密狗（Dongle）的老系統，<strong>無法跑在 Linux Docker 上</strong>。
+        若硬上 Windows Container 會面臨映像檔動輒 10GB、底層核心版本死鎖等維運泥淖。此類系統應退回以<strong>「標準化 VM 映像檔（Golden AMI）+ 自動化腳本」</strong>維護。
+      </p>
+    </div>
+  </section>
+
+  <!-- 雲端支援度與跨雲搬遷 -->
+  <section class="card">
+    <h2>3. 公有雲生態系支援度與「跨雲搬遷真實邊界」</h2>
+    <p>
+      Docker 在三大主流公有雲（AWS、GCP、Azure）皆為<strong>「底層標配建設」</strong>。企業可依團隊維運能力選擇不同層級的運作模式：
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>維運層級</th>
+          <th>AWS 代表產品</th>
+          <th>GCP 代表產品</th>
+          <th>Azure 代表產品</th>
+          <th>特性與適用場景</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Serverless 容器<br>(老手推薦)</strong></td>
+          <td>ECS + Fargate</td>
+          <td>Cloud Run</td>
+          <td>Container Apps</td>
+          <td><span class="badge badge-success">免管主機作業系統</span><br>打烊自動縮容省錢、尖峰自動秒級橫向擴充。</td>
+        </tr>
+        <tr>
+          <td><strong>K8s 容器叢集</strong></td>
+          <td>EKS</td>
+          <td>GKE</td>
+          <td>AKS</td>
+          <td><span class="badge badge-warning">需專職維運團隊</span><br>適合超大型微服務架構，中型商場維護負擔偏重。</td>
+        </tr>
+        <tr>
+          <td><strong>VM 自裝 Docker</strong></td>
+          <td>EC2</td>
+          <td>Compute Engine</td>
+          <td>Virtual Machines</td>
+          <td><span class="badge badge-primary">彈性最高但需手動管 OS</span><br>適合小型測試或將多個工具擠在一台節省成本。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-box">
+      <strong>跨雲搬遷（Lift-and-Shift）的真實工作量邊界：</strong>
+      <div class="code-diagram">
+【搬遷時 100% 帶著走（完全不用改）】
+  ✔ 應用程式本體、相依套件、底層運作庫（Docker 映像檔原封不動直跑）
+
+【搬遷時需重新接線的「三大外部水電」】
+  ❶ 網路與轉發大門：重設新雲端的負載平衡器（ALB）並將 DNS 解析轉移新 IP。
+  ❷ 數據持久層連接：修改環境變數中的資料庫連線字串，指向新資料庫。
+  ❸ 雲端專屬金鑰庫：替換各雲端原廠專屬的 Secrets Manager / KMS 存取憑證。
+      </div>
+      <strong>結論：</strong>容器化消滅了原本需耗費數週的「環境重灌與除錯相容性」，將跨雲遷移收斂為「半天內配置網路與連線」的極簡維度。
+    </div>
+  </section>
+
+  <!-- 測試環境效益 -->
+  <section class="card">
+    <h2>4. 測試沙盒（Staging / UAT）的殺手級效益</h2>
+    <p>容器化徹底終結了<strong>「在我電腦上明明好好的（It works on my machine）」</strong>維運惡夢：</p>
+    <ul>
+      <li><span class="highlight">環境 1:1 鏡像複製：</span>測試機跑的映像檔與未來正式機完全相同，徹底杜絕相依套件微小差異引發的事故。</li>
+      <li><span class="highlight">拋棄式沙盒（Ephemeral Environment）：</span>使用 <code>docker compose up</code> 30 秒拉出包含 API、中台與資料庫的完整測試鏈路；測試完畢一秒銷毀清空，不留污染資料。</li>
+      <li><span class="highlight">雲端成本劇降 70%：</span>測試機設定僅於平日上班時段開啟，下班自動銷毀回收，無需常態性養著高額 VM。</li>
+    </ul>
+  </section>
+
+  <!-- RFP 選商評審指標 -->
+  <section class="card">
+    <h2>5. 採購 RFP 與廠商評審必備「容器化查核清單」</h2>
+    <p>為避免引進老舊拼裝車架構，應在開標規格與技術簡報中加入以下檢驗卡榫：</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>查核維度</th>
+          <th>合格標準（現代化架構）</th>
+          <th>淘汰警訊（歷史包袱架構）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="highlight">交付標的物</span></td>
+          <td>提供標準 Docker 映像檔、Dockerfile 或 Helm Chart 部署腳本。</td>
+          <td>要求遠端桌面連線登入，手動執行 <code>.exe</code> 或 <code>.msi</code> 安裝精靈。</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">無狀態設計<br>(Stateless)</span></td>
+          <td>運算節點本機硬碟不儲存關鍵資料，隨意砍除節點交易不受損。</td>
+          <td>將發票、交易記錄寫在本機 <code>C:\logs</code> 或硬碟內，關機就遺失。</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">系統版本升級</span></td>
+          <td>支援以新版本映像檔進行無感知「滾動更新（Rolling Update）」。</td>
+          <td>升級需全館停機數小時，由工程師逐台置換檔案與重新註冊元件。</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">配置與金鑰分離</span></td>
+          <td>資料庫密碼與 API 端點一律以環境變數（Environment Variables）注入。</td>
+          <td>資料庫 IP 與密碼直接寫死在程式碼或編譯後的配置檔中。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+</body>
+</html>

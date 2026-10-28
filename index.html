@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>百貨商場新世代核心資訊系統架構與數位轉型藍圖 - 簡報導覽主頁</title>
+<style>
+  :root {
+    --primary: #1e3a8a;
+    --primary-dark: #0f172a;
+    --primary-light: #3b82f6;
+    --secondary: #0f766e;
+    --accent: #b91c1c;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+    line-height: 1.6;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+    color: #ffffff;
+    padding: 45px 40px;
+    border-radius: 14px;
+    margin-bottom: 35px;
+    box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  header p {
+    font-size: 16px;
+    opacity: 0.92;
+    max-width: 850px;
+  }
+
+  .badge-container {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .badge-hdr {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  /* Executive Abstract Box */
+  .executive-box {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--secondary);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 35px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+  }
+
+  .executive-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .executive-desc {
+    font-size: 14.5px;
+    color: var(--text-main);
+    line-height: 1.7;
+  }
+
+  /* Grid Layout */
+  .grid-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-light);
+    padding-left: 12px;
+  }
+
+  .reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-light);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #eff6ff;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+  }
+
+  .card-tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .card h3 {
+    font-size: 17.5px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    line-height: 1.45;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .btn-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: #f8fafc;
+    color: var(--primary);
+    border: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-link:hover {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 50px;
+    padding-bottom: 30px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>百貨商場新世代核心資訊系統架構與數位轉型藍圖</h1>
+    <p>以零基思維（Zero-based）與數十年零售商場第一線實戰經驗為基底，為經營層建立具備高抗災性、自主掌控權與現代中台標準的集團級 IT 體系藍圖。</p>
+    <div class="badge-container">
+      <span class="badge-hdr">零基架構設計</span>
+      <span class="badge-hdr">四群黃金平衡</span>
+      <span class="badge-hdr">規格自主中台</span>
+      <span class="badge-hdr">精實鐵三角組織</span>
+      <span class="badge-hdr">高可用跨區容災</span>
+    </div>
+  </header>
+
+  <div class="executive-box">
+    <div class="executive-title">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+      簡報導讀戰略主軸（Executive Strategic Core）
+    </div>
+    <div class="executive-desc">
+      本套方案不以既有歷史包袱或個別廠商框架為限，從「前線收銀零中斷、專櫃結算零差錯、後勤財務零法規風險、數位主權牢牢自主」的底層營運出發。全案劃分為七大模組文件，作為向經營層全面說明商場 IT 現代化標準之完整作戰藍圖。
+    </div>
+  </div>
+
+  <div class="grid-title">七大戰略簡報與架構專案模組</div>
+
+  <div class="reports-grid">
+    <!-- Card 1 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">01</span>
+          <span class="card-tag">架構選型與中台精神</span>
+        </div>
+        <h3>核心系統架構選型評估與中台戰略分析</h3>
+        <p>深入分析 1～9 大模組邊界、三大選商方案優劣勢（統包 vs 四群分立 vs 極致解耦）、市場供應鏈現況，以及「規格自主掌權、實作交鑰匙外包」之中台治理哲學。</p>
+      </div>
+      <a href="1.百貨商場核心資訊系統架構選型評估與中台戰略分析報告 (1).html" class="btn-link" target="_blank">進入簡報文件 ➔</a>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">02</span>
+          <span class="card-tag">實體藍圖與容災</span>
+        </div>
+        <h3>新世代商場多中台雲端高可用實體架構圖</h3>
+        <p>各分店 Local Gateway + SQLite 離線取號抗災體系、全域 API Gateway + WAF 統一防禦、六大業務中台、傳票中台緩衝墊，以及 AWS 雙 AZ 與跨區防勒索冷備份實體藍圖。</p>
+      </div>
+      <a href="2.系統架構圖.html" class="btn-link" target="_blank">進入架構圖表 ➔</a>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">03</span>
+          <span class="card-tag">上線切換藍圖</span>
+        </div>
+        <h3>零售系統升級之四階段 Cutover 藍圖與備忘錄</h3>
+        <p>穩健落地的四階段策略：Phase 1 實現館內 POS 與 APP 會員閉環；Phase 2 解鎖 EC 與訂單中台；過渡期後端財務報表雙軌；Phase 3/4 邁向新 GL 與 AI 賦能。</p>
+      </div>
+      <a href="3.零售系統升級之四階段 Cutover 藍圖與架構備忘錄.html" class="btn-link" target="_blank">進入簡報文件 ➔</a>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">04</span>
+          <span class="card-tag">資料遷移防線</span>
+        </div>
+        <h3>新舊系統交接（Cutover）與歷史資料轉移規範</h3>
+        <p>「冷熱完全解耦、時間換空間」轉移哲學：靜態合約提前走、有效點數與活躍券最後一夜收；海量歷史明細採「時間軸倒序、分階段背景轉移」，杜絕上線翻車。</p>
+      </div>
+      <a href="4.新舊系統交接（Cutover）與歷史資料轉移標準規範.html" class="btn-link" target="_blank">進入簡報文件 ➔</a>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">05</span>
+          <span class="card-tag">財務與審計安全</span>
+        </div>
+        <h3>財務系統交接（Cutover）與期初結轉標準規範</h3>
+        <p>嚴守財務切換鐵律：科目餘額必轉（試算平衡）、AP/AR 未結明細 100% 逐筆立沖結轉、1 月 1 日最佳切換點指引，以及「總帳餘額強制等於立沖明細」之稽核紅線。</p>
+      </div>
+      <a href="5.財務系統交接（Cutover）與期初結轉標準規範.html" class="btn-link" target="_blank">進入簡報文件 ➔</a>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">06</span>
+          <span class="card-tag">數據中台與效能</span>
+        </div>
+        <h3>歷史業績轉檔與數據中台架構規範</h3>
+        <p>「共用儲存，隔離運算」架構鐵律：即時營運庫（OLTP）與分析型數據中台（OLAP）實體運算隔離，分時段滾動轉入歷史業績，大型 YoY 報表運算絕不卡死前台結帳。</p>
+      </div>
+      <a href="6.零售系統升級之歷史業績轉檔與數據中台架構規範.html" class="btn-link" target="_blank">進入簡報文件 ➔</a>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="card">
+      <div>
+        <div class="card-header">
+          <span class="card-num">07</span>
+          <span class="card-tag">組織治理與防線</span>
+        </div>
+        <h3>資訊部：組織架構與工作職責白皮書</h3>
+        <p>「精實鐵三角（Infra、Software、Security）＋ 主管助理行政中樞」架構。嚴格落實主次負責制（70/30）、全員皆客服派工機制、外包硬體 SLA 監督與資安一票否決權。</p>
+      </div>
+      <a href="7.資訊部：組織架構與工作職責白皮書.html" class="btn-link" target="_blank">進入簡報文件 ➔</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>零售商場數位轉型與核心系統規劃專案 • 2026 年</p>
+  </footer>
+</div>
+
+</body>
+</html>

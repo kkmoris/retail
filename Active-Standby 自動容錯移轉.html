@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>雙機房主備切換（Failover）與災後反向資料回補（Failback）機制解析</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #0284c7;
+      --accent: #b91c1c;
+      --success: #15803d;
+      --warning: #b45309;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-dark: #0f172a;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2.5rem 1rem;
+    }
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: #64748b;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    h2 {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .term-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--secondary);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .term-title {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .badge-active { background: #dcfce7; color: var(--success); }
+    .badge-standby { background: #e0f2fe; color: var(--secondary); }
+    .badge-down { background: #fee2e2; color: var(--accent); }
+    .badge-sync { background: #fef3c7; color: var(--warning); }
+    
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .timeline-step {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      background: #fafafa;
+      position: relative;
+    }
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .step-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-dark);
+    }
+    .diagram {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+    .highlight {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .note-box {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+    }
+    .alert-box {
+      background: #fef2f2;
+      border-left: 4px solid var(--accent);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Active-Standby 自動容錯移轉與差異資料回補機制</h1>
+    <p class="subtitle">雙機房高可用性（HA）叢集生命週期與資料一致性運作整理</p>
+  </header>
+
+  <!-- 正式術語對照 -->
+  <section class="card">
+    <h2>1. 核心機制專業術語（Terminology）</h2>
+    
+    <div class="term-box">
+      <div class="term-title">① 仲裁管理者：叢集管理器（Cluster Manager / Orchestrator）</div>
+      <p>監控節點心跳（Heartbeat）、負責裁決誰是主機（Master/Active）與誰是備援（Replica/Standby）的中樞引擎（例如 AWS Aurora Storage Fleet、Patroni、Oracle Data Guard Broker）。</p>
+    </div>
+
+    <div class="term-box">
+      <div class="term-title">② 故障接管：容錯移轉（Failover / Promotion）</div>
+      <p>當主節點無預警失效時，備援節點由唯讀狀態（Read-Only）自動升格為可讀寫主機（Read-Write）接管營運的過程。</p>
+    </div>
+
+    <div class="term-box">
+      <div class="term-title">③ 角色對調：角色反轉（Role Reversal）</div>
+      <p>舊主機復原重啟後，系統強制將其降級為備援（Standby），並反轉資料複製方向（原為 A ➔ B，改為 B ➔ A）。</p>
+    </div>
+
+    <div class="term-box">
+      <div class="term-title">④ 差異回補：日誌追平（WAL / Binlog Catch-up & Resync）</div>
+      <p>新備援機透過交易日誌序號（LSN / Log Sequence Number），向現任主機索取離線期間產生的新帳務日誌並依序重放（Replay），達成「最終一致性」。</p>
+    </div>
+  </section>
+
+  <!-- 四階段自動演進過程 -->
+  <section class="card">
+    <h2>2. 機房主從狀態切換與自動閉環流程</h2>
+    
+    <div class="timeline">
+      <!-- 階段 1 -->
+      <div class="timeline-step">
+        <div class="timeline-header">
+          <span class="step-title">階段一：平時正常營運（Active - Standby）</span>
+          <span><span class="badge badge-active">A: Active</span> ➔ <span class="badge badge-standby">B: Standby</span></span>
+        </div>
+        <div class="diagram">
+[前台 POS / APP] ──(寫入交易)──> [機房 A (Active)] ──(同步日誌 WAL)──> [機房 B (Standby 唯讀)]
+        </div>
+        <p>所有結帳發票與點數寫入 A 機房，A 透過低延遲專線將交易日誌複製給 B 機房待命。</p>
+      </div>
+
+      <!-- 階段 2 -->
+      <div class="timeline-step">
+        <div class="timeline-header">
+          <span class="step-title">階段二：A 機房故障，觸發自動 Failover</span>
+          <span><span class="badge badge-down">A: 離線</span> ➔ <span class="badge badge-active">B: 升級 Active</span></span>
+        </div>
+        <div class="diagram">
+[機房 A (斷電/斷網)] ──(心跳中斷)──> [Cluster Manager 判定 A 死亡]
+                                            │
+                                            ▼ (授權升級)
+[前台 POS / APP] ──(轉發寫入)──> [機房 B (自動升為 Active 承接業務)]
+        </div>
+        <p>Cluster Manager 偵測到 A 連續心跳遺失，強制將 B 升級為 Active。前台連線指向 B，營運無中斷，新資料持續落入 B。</p>
+      </div>
+
+      <!-- 階段 3 -->
+      <div class="timeline-step">
+        <div class="timeline-header">
+          <span class="step-title">階段三：A 機房修復上線，自動角色反轉（Role Reversal）</span>
+          <span><span class="badge badge-sync">A: 降級回補中</span> ➔ <span class="badge badge-active">B: 維持 Active</span></span>
+        </div>
+        <div class="diagram">
+[機房 A 修復通電] ──(註冊重返)──> [Cluster Manager 強制 A 降為 Standby (防止腦裂)]
+                                            │
+                                            ▼ (主動詢問差異日誌)
+[機房 B (現任主機)] ──(逆向回補斷線期間日誌)──> [機房 A (追趕進度中)]
+        </div>
+        <p>A 重開機後不允許接收寫入，被強制設定為 Standby。A 自動向 B 查詢斷線期間累積的交易日誌，B 逆向將帳務回填給 A。</p>
+      </div>
+
+      <!-- 階段 4 -->
+      <div class="timeline-step">
+        <div class="timeline-header">
+          <span class="step-title">階段四：兩端完全同步，達成最終一致性</span>
+          <span><span class="badge badge-standby">A: 健全 Standby</span> ➔ <span class="badge badge-active">B: 現任 Active</span></span>
+        </div>
+        <div class="diagram">
+[前台 POS / APP] ──(寫入交易)──> [機房 B (Active)] ──(同步日誌)──> [機房 A (Standby 待命)]
+        </div>
+        <p>A 將落後的資料完全追平（Lag = 0）。雙機架構自動完成自癒閉環，維持穩定營運，全程無需人工下指令倒資料。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 關鍵風險防範 -->
+  <section class="card">
+    <h2>3. 為什麼此流程「嚴禁人工介入」？</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>重大風險指標</th>
+          <th>人工介入處理之隱患</th>
+          <th>Cluster Manager 自動化控管</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-down">腦裂現象 (Split-Brain)</span></td>
+          <td>A 恢復時若誤認自己仍是主機，兩邊同時接單，發票流水號與帳戶互踩覆蓋，造成不可逆損毀。</td>
+          <td>仲裁機制保證同一時間「全網僅能有一個節點具備寫入權限」，A 啟動時立刻鎖死為唯讀。</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-down">資料順序錯亂</span></td>
+          <td>工程師手動比對資料或倒 dump，容易遺漏外鍵關聯與微秒級交易先後順序。</td>
+          <td>依據日誌序號（LSN）逐筆精確重放，確保結帳、扣點、退貨時序 100% 吻合。</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-down">時間差延誤營運</span></td>
+          <td>人員半夜接獲通報、登入主機、撰寫 SQL 匯出匯入，平均耗時 1 至 4 小時。</td>
+          <td>系統秒級探測、自動建立逆向傳輸鏈路，復原時間（RTO）壓縮至數分鐘內。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-box">
+      <strong>災後切回建議（Failback 策略）：</strong>
+      <p style="margin-top: 0.5rem;">
+        當 A 與 B 重新打平後，業界普遍採「現任 B 繼續穩定當家」原則，避免二次切換風險；若需讓 A 恢復為主機，則排定於<strong>深夜打烊離峰時段</strong>發起數秒鐘的優雅主從調換（Graceful Switchover），對前線營業完全零衝擊。
+      </p>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>

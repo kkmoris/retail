@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新舊系統交接與歷史資料轉移標準規範</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f7fafc;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 26px;
+        }
+        h2 {
+            color: #2b6cb0;
+            margin-top: 32px;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+            font-size: 20px;
+        }
+        h3 {
+            color: #2c5282;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #2b6cb0;
+        }
+        .warning-box {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #9c4221;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .tag-static { background-color: #4a5568; }
+        .tag-hot { background-color: #e53e3e; }
+        .tag-cold { background-color: #3182ce; }
+/* 瀏覽器播放與列印全域浮水印：陳勇至 (Moris) 規劃 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none; /* 穿透點擊，完全不干擾滑鼠點選與選取 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.08' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+  background-repeat: repeat;
+}
+@media print {
+  body::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>環球資訊部：新舊系統交接（Cutover）與歷史資料轉移標準規範</h1>
+        
+        <div class="highlight-box">
+            <strong>核心轉移哲學：</strong><br>
+            「靜態底盤提前走、熱資料最後一夜收、海量歷史明細白天背景分階段搬；冷熱分離減包袱、複雜邏輯去狀態、極少特例走後台。」
+        </div>
+
+        <h2>一、 舊系統 5 大核心資料類別轉移策略</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="20%">資料類別</th>
+                    <th width="25%">轉移策略</th>
+                    <th width="55%">實務做法與 ISO 執行標準</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. 合約相關資料</strong></td>
+                    <td><span class="tag tag-static">完整全量轉入</span></td>
+                    <td>專櫃租賃條件、抽成級距與履約保證金採<strong>「提前靜態匯入」</strong>。切換前會同財會完成盲測對帳（UAT），舊合約轉唯讀加密封存至少保留 5 年。</td>
+                </tr>
+                <tr>
+                    <td><strong>2. 會員基本資料</strong></td>
+                    <td><span class="tag tag-static">全量轉入 + 增量</span></td>
+                    <td>採<strong>「提前大宗底盤匯入 + 當晚增量同步（Delta Sync）」</strong>，當晚僅需同步打烊前最新註冊之會員，極速完成。</td>
+                </tr>
+                <tr>
+                    <td><strong>3. 會員權益（券類）</strong></td>
+                    <td><span class="tag tag-hot">過濾轉入有效資產</span></td>
+                    <td>砍掉過期雜訊，<strong>「只轉轉移當日仍有效的券」</strong>（`status = 'ACTIVE'` 且未過期），已使用與過期廢券留在舊系統，大幅減輕運算包袱。</td>
+                </tr>
+                <tr>
+                    <td><strong>4. 會員權益（點數）</strong></td>
+                    <td><span class="tag tag-hot">快照結算 + 批次轉入</span></td>
+                    <td>以當晚閉館打烊之<strong>「總點數快照 + 有效期批次（Lot-based Expiry）」</strong>轉入新系統當作期初餘額。歷史 VOID 沖銷走 API 回溯舊系統。</td>
+                </tr>
+                <tr>
+                    <td><strong>5. 會計總帳與交易明細</strong></td>
+                    <td><span class="tag tag-cold">期初餘額 + 背景搬遷</span></td>
+                    <td>總帳僅轉入「科目期初餘額（Opening Balance）」；歷史交易明細採<strong>「時間軸倒序分階段背景轉移」</strong>，冷資料不佔用深夜切換時間。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>二、 海量交易明細：「時間軸倒序、分階段背景轉移」黃金戰略</h2>
+        <p>針對需要耗費最多轉檔時間的歷史交易明細（例如 2 年內明細），採用<strong>「冷熱完全解耦、時間換空間」</strong>的敏捷轉移架構：</p>
+        
+        <h3>1. 階段性背景轉移計畫 (Phase-based Background Seeding)</h3>
+        <ul>
+            <li><strong>最後 3 個月熱資料（決戰 Cutover 當晚）</strong>：
+                <ul>
+                    <li>保留最近 3 個月的交易資料於切換當晚執行，確保開館時最常被調閱、退換貨的熱資料秒開。</li>
+                    <li><strong>動態調整視窗（Agile Window）</strong>：最後留存的月數（如 3 個月或 2 個月），可依據前期背景試跑之實測效能數據（Benchmark）進行機動微調。</li>
+                </ul>
+            </li>
+            <li><strong>1 年至 2 年前遠期冷資料（正式上線後白天執行）</strong>：
+                <ul>
+                    <li>上線後第一階段背景搬遷，於白天營運離峰時段寫入，不影響前線 POS 結帳。</li>
+                </ul>
+            </li>
+            <li><strong>6 個月至 1 年前中期資料（第二階段背景執行）</strong>。</li>
+            <li><strong>3 個月至 6 個月前近中期資料（最後階段背景執行）</strong>。</li>
+        </ul>
+
+        <h3>2. 安全防護與自動化控制機制</h3>
+        <ul>
+            <li><strong>離峰限流防護（Throttling & Micro-batching）</strong>：背景搬遷程式設定 CPU/IO 門檻監控（例如 CPU > 50% 自動減速），以每批次 500~1,000 笔微分頁寫入，絕不鎖表。</li>
+            <li><strong>時間戳記智慧路由（Timestamp Threshold Routing）</strong>：後端設定全域時間開關（Time-window Flag），若查詢時間點小於「新系統已完成搬遷日」，APP / 客服 API 自動路由至舊系統唯讀備份庫抓取。</li>
+        </ul>
+
+        <h2>三、 點數 VOID 沖銷與 App 未同步更新之架構防線</h2>
+
+        <h3>1. 點數正負向與歷史 VOID 處理原則</h3>
+        <ul>
+            <li><strong>歷史交易 VOID 隔離</strong>：切換日前的歷史交易若於上線後發生退貨或 VOID 沖銷，新系統不處理歷史狀態機，而是透過 API 呼叫舊系統邏輯進行驗證與扣點。</li>
+            <li><strong>極少數特例實事求是（KISS 原則）</strong>：針對「搬遷中途被拿來辦理半年前退貨」等 0.01% 極端特例（Edge Cases），拒絕過度工程開發；直接<strong>「搭配樓管/客服人工後台進行扣點與單據調整」</strong>，並記錄 Audit Log 備查。</li>
+        </ul>
+
+        <h3>2. App 未同步更新之 API 轉譯防線 (Adapter Layer)</h3>
+        <ul>
+            <li><strong>API Gateway 雙向轉譯（Adapter Layer）</strong>：在 App 與新後端之間架設 API 轉譯中介層，將舊版 App 請求自動翻譯成新後端規格，並保留至少 3 至 6 個月舊版 API 支援期。</li>
+            <li><strong>柔性引導與降級備案（Graceful Degradation）</strong>：若切換當晚發生預期外卡頓，App 啟動友善告示：「點數查詢升級中，不影響現場專櫃消費累點與折抵」，確保現場實體營運絕對不斷線。</li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>ISO 簽核與開機紅線（Red Line）：</strong><br>
+            「切換當晚必須執行自動化校驗腳本（Reconciliation Bot），核對『會員總數、有效點數總餘額、有效券總張數』之 Checksum，經雙人複核完全吻合後，方可按下正式開機營運按鈕。」
+        </div>
+    </div>
+</body>
+</html>

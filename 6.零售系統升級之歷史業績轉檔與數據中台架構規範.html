@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>零售系統升級之歷史業績轉檔與數據中台架構規範</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f7fafc;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 26px;
+        }
+        h2 {
+            color: #2b6cb0;
+            margin-top: 32px;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+            font-size: 20px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #2b6cb0;
+        }
+        .warning-box {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #9c4221;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .tag-strategy { background-color: #3182ce; }
+        .tag-arch { background-color: #2b6cb0; }
+/* 瀏覽器播放與列印全域浮水印：陳勇至 (Moris) 規劃 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none; /* 穿透點擊，完全不干擾滑鼠點選與選取 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.08' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+  background-repeat: repeat;
+}
+@media print {
+  body::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>環球資訊部：歷史業績轉檔與數據中台架構規範</h1>
+        
+        <div class="highlight-box">
+            <strong>核心戰略核心：</strong><br>
+            「短期穩住核心即時營運，長期透過數據中台分時段滾動轉入歷史業績；並在架構上實現 OLTP（即時交易）與 OLAP（歷史分析）的實體運算隔離，確保營運效能零干擾。」
+        </div>
+
+        <h2>一、 歷史業績轉檔的核心思考點與痛點</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="25%">思考維度</th>
+                    <th width="35%">潛在痛點與風險</th>
+                    <th width="40%">架構對應策略</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>專案範疇與時程</strong></td>
+                    <td>若將龐大歷史業績硬塞進核心系統 Cutover 專案，易導致時程延宕與系統翻車。</td>
+                    <td><span class="tag tag-strategy">核心與歷史分離</span>：核心系統優先上線，歷史業績列為 Phase 2 獨立推進。</td>
+                </tr>
+                <tr>
+                    <td><strong>資料清洗與一致性</strong></td>
+                    <td>多年累積的舊資料常伴隨組織異動、櫃號更動，直接全量灌入會導致報表失真。</td>
+                    <td><span class="tag tag-strategy">分時段滾動轉入</span>：先轉近 1 年（效益最高），磨合清洗規則後，再逐步推進 1-2 年與 2-3 年。</td>
+                </tr>
+                <tr>
+                    <td><strong>系統資源競用 (I/O & Lock)</strong></td>
+                    <td>若歷史轉檔與重度 YoY 分析查詢直接打在生產資料庫，會拖慢前線收銀與即時業績查詢。</td>
+                    <td><span class="tag tag-arch">運算與儲存隔離</span>：建立獨立的分析型數據中台與隔離的運算叢集。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>二、 歷史業績轉檔實戰 SOP：分時段滾動策略</h2>
+        <ol>
+            <li><strong>第一階段（近 1 年高頻數據優先）</strong>：
+                <ul>
+                    <li>優先轉移最近 1 年內的歷史業績。此區間涵蓋日常營運與 YoY 查詢 80% 以上的需求，投資報酬率最高。</li>
+                    <li>作為轉檔清洗規則的「試煉場」，徹底克服舊系統組織與櫃號更動的髒資料對應問題。</li>
+                </ul>
+            </li>
+            <li><strong>第二階段（1-3 年深層歷史滾動推進）</strong>：
+                <ul>
+                    <li>在規則穩定後，利用背景非同步批次（Background ETL），依序將 1-2 年、2-3 年的歷史業績轉入中台。</li>
+                    <li><strong>非同步執行優勢</strong>：轉檔過程完全不用避開營業時間，不影響前線專櫃日常收銀與營運。</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>三、 數據中台與即時業績的「資源隔離」架構設計</h2>
+        <p>為避免歷史報表運算與大量轉檔拖垮即時營運，架構上必須做到雙軌隔離：</p>
+        <ul>
+            <li><strong>營運數據層（Real-time Operational Mart / Hot Store）</strong>：
+                <ul>
+                    <li>專門處理當日即時業績、收銀、即時庫存。</li>
+                    <li><strong>絕對禁區</strong>：禁止任何歷史 ETL 寫入及重度聚合查詢，確保秒級回應。</li>
+                </ul>
+            </li>
+            <li><strong>分析型數據倉儲（Analytical Data Hub / Cold Store）</strong>：
+                <ul>
+                    <li>專門存放歷史業績、執行跨年度 YoY 運算與深層數據挖掘。</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>架構鐵律：共用儲存，隔離運算 (Shared Storage, Isolated Compute)</strong><br>
+            「透過雲端數據倉儲架構，將即時查詢運算群組（WH_Realtime）與歷史轉檔/分析運算群組（WH_Analytics_ETL）在底層實體隔離。即使分析端正在跑吃重的大型 YoY 運算，前線即時業績查詢依然不受任何影響！」
+        </div>
+    </div>
+</body>
+</html>

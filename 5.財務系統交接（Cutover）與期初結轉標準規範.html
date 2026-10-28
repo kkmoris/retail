@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>財務系統交接（Cutover）與期初結轉標準規範</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f7fafc;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 26px;
+        }
+        h2 {
+            color: #2b6cb0;
+            margin-top: 32px;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+            font-size: 20px;
+        }
+        h3 {
+            color: #2c5282;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #2b6cb0;
+        }
+        .warning-box {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #9c4221;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .tag-balance { background-color: #4a5568; }
+        .tag-openitem { background-color: #e53e3e; }
+        .tag-archive { background-color: #3182ce; }
+/* 瀏覽器播放與列印全域浮水印：陳勇至 (Moris) 規劃 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none; /* 穿透點擊，完全不干擾滑鼠點選與選取 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.08' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+  background-repeat: repeat;
+}
+@media print {
+  body::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>環球資訊部：財務系統交接（Cutover）與期初結轉標準規範</h1>
+        
+        <div class="highlight-box">
+            <strong>財務系統切換鐵律三原則：</strong><br>
+            1. 科目餘額一定要轉（確保試算平衡）<br>
+            2. 立沖餘額也一定要轉（AP/AR 與費用/收入未結明細 100% 過渡）<br>
+            3. 最好切在 1 月 1 日上新財務系統（完美避開損益類虛帳戶拆分惡夢）
+        </div>
+
+        <h2>一、 財務系統結轉核心策略與資料範疇</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="20%">會計項目類別</th>
+                    <th width="25%">轉移策略</th>
+                    <th width="55%">實務做法與 ISO 執行標準</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. 資產、負債、權益<br>(永久性帳戶)</strong></td>
+                    <td><span class="tag tag-balance">科目期初餘額轉入</span></td>
+                    <td>舊系統結出試算表（Trial Balance），確保 $\text{資產} = \text{負債} + \text{業主權益}$ 恆等式成立後，將期初餘額匯入新總帳。</td>
+                </tr>
+                <tr>
+                    <td><strong>2. 應收 (AR) / 應付 (AP)</strong></td>
+                    <td><span class="tag tag-openitem">未結明細立沖轉入</span></td>
+                    <td><strong>絕對不能只轉總額！</strong>所有未沖完的發票與單據明細（Open Items）必須 100% 逐筆轉入，供後續匯款與對帳使用。</td>
+                </tr>
+                <tr>
+                    <td><strong>3. 費用 / 收入類立沖帳</strong></td>
+                    <td><span class="tag tag-openitem">未結明細立沖轉入</span></td>
+                    <td>如預收租金、待攤費用、暫付款等未結清之立沖明細必須完整移轉，確保新系統上線後可順利執行核銷。</td>
+                </tr>
+                <tr>
+                    <td><strong>4. 歷史傳票與發票明細</strong></td>
+                    <td><span class="tag tag-archive">舊系統唯讀封存</span></td>
+                    <td>歷史細部傳票不搬入新系統。舊財務系統降級為加密唯讀庫（Read-Only Archive），供稽核與查帳使用。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>二、 舊系統封關與資料撈取前置作業（Financial Close & Cutoff）</h2>
+        <p>為避免資料汙染與時間差災難，IT 團隊在撈取期初餘額與立沖明細前，舊系統必須嚴格達成以下 <strong>4 大封關階段</strong>：</p>
+        <ol>
+            <li><strong>日常業務全面停止輸入（Stop Entry）</strong>：切換當週打烊後，強制鎖定舊系統，禁止任何新傳票登打與 AR/AP 異動。</li>
+            <li><strong>子系統模組全過帳（Module Month-End Close）</strong>：POS 營業收入、進銷存、固定資產與薪資等子系統必須全數完成當月結帳，並完整過帳至總帳。</li>
+            <li><strong>期末調整分錄完成</strong>：預提、權責發生及會計師調整分錄全數登打完畢，確保試算表為最終版本。</li>
+            <li><strong>舊系統正式唯讀封存（Read-Only Lock）</strong>：當期初與立沖明細順利匯入新系統、經 Checksum 雙人複核無誤後，舊系統永久鎖定寫入權限。</li>
+        </ol>
+
+        <h2>三、 最佳切換時間點指引</h2>
+        <ul>
+            <li><strong>首選方案（1 月 1 日新年度開帳）</strong>：
+                <ul>
+                    <li>舊系統完成上一年度年結，虛帳戶（收入/費用）自動歸入累積盈虧。</li>
+                    <li>新系統從零開始乾淨記錄全新年度的會計帳，完美省去跨年度損益合併或月度明細拆分的龐大開銷。</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>ISO 財務稽核紅線：</strong><br>
+            「總帳統馭科目餘額，必須強制等於所有未結立沖明細加總（$\sum \text{Open Items} = \text{GL Balance}$）。總帳與明細若有任何一分錢誤差，新系統拒絕開機上線。」
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>百貨商場核心資訊系統架構選型評估與中台戰略分析報告</title>
+<style>
+  :root {
+    --primary: #1e3a8a;
+    --primary-light: #3b82f6;
+    --secondary: #0f766e;
+    --accent: #b91c1c;
+    --text-main: #1f2937;
+    --text-muted: #4b5563;
+    --bg-main: #f9fafb;
+    --bg-card: #ffffff;
+    --border: #e5e7eb;
+    --badge-opt1: #6366f1;
+    --badge-opt2: #059669;
+    --badge-opt3: #d97706;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+    line-height: 1.65;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    padding: 30px 20px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+    color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  header p {
+    font-size: 16px;
+    opacity: 0.9;
+  }
+
+  .section {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    border-left: 5px solid var(--primary-light);
+    padding-left: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .module-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8fafc;
+  }
+
+  .module-num {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+    font-size: 15px;
+  }
+
+  .module-desc {
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14.5px;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #fafafa;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    margin-right: 6px;
+  }
+
+  .badge-opt1 { background-color: var(--badge-opt1); }
+  .badge-opt2 { background-color: var(--badge-opt2); }
+  .badge-opt3 { background-color: var(--badge-opt3); }
+
+  .callout {
+    background-color: #eff6ff;
+    border-left: 4px solid var(--primary-light);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+    font-size: 14.5px;
+  }
+
+  .callout-warning {
+    background-color: #fef2f2;
+    border-left: 4px solid var(--accent);
+    color: #991b1b;
+  }
+
+  .callout-warning strong {
+    color: #7f1d1d;
+  }
+
+  .callout-success {
+    background-color: #f0fdf4;
+    border-left: 4px solid var(--secondary);
+    color: #166534;
+  }
+
+  .callout-success strong {
+    color: #14532d;
+  }
+
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: 15px;
+  }
+
+  li {
+    margin-bottom: 6px;
+    font-size: 14.5px;
+  }
+
+  .highlight {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .risk-tag {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .strategy-box {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 15px;
+  }
+
+  .strategy-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+  }
+/* 瀏覽器播放與列印全域浮水印：陳勇至 (Moris) 規劃 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none; /* 穿透點擊，完全不干擾滑鼠點選與選取 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.08' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+  background-repeat: repeat;
+}
+@media print {
+  body::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>百貨商場核心資訊系統架構選型評估與中台戰略分析報告</h1>
+    <p>針對 1～9 大模組邊界劃分、選商生態現況、維運究責鏈條及中台建置精神研究</p>
+  </header>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <div class="section-title">一、 百貨資訊系統九大模組定義與業務範圍</div>
+    <div class="modules-grid">
+      <div class="module-card">
+        <div class="module-num">1. POS 與 EDC 管理</div>
+        <div class="module-desc">前台收銀、多元支付 EDC 整合、斷線續傳、發票取號開立、離線 SQLite 緩存。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">2. 合約與專櫃維運</div>
+        <div class="module-desc">專櫃合約條款、抽成模式（純抽/包底取高/階梯抽...）、代扣費用、罰款、日月結 SOA(Statement of Account) 對帳、暫存傳票及發票換開等等。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">3. 會員系統 (CRM)</div>
+        <div class="module-desc">會員基本資料、多卡號管理、晉級機制、標籤群組篩選、VIP 禮遇、點數活動、點數過期失效、金額補登調整及IFRS遞延費用計算。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">4. 禮贈品系統</div>
+        <div class="module-desc">全館行銷活動設定（滿額/滿千送百..等等）、贈品進銷存、線上/現場贈品核銷兌換管理。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">5. 財務系統</div>
+        <div class="module-desc">應收帳款 (AR)、應付帳款 (AP)、總帳會計 (GL)、出納與票據管理、預算控管。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">6. 自營單品管理</div>
+        <div class="module-desc">自營單品基本資料、請採購作業、驗收、進退貨、批次變價、毛利計算與盤點、寄售作業。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">7. 人力資源管理 (HRM)</div>
+        <div class="module-desc">複雜排班考勤（符合勞基法）、薪資獎金計算、教育訓練紀錄、績效考核、員工餐補...等等。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">8. 請採驗與供應商管理</div>
+        <div class="module-desc">固定資產與消耗品管理、費用請採驗流程、資產盤點、維護使用記錄與非專櫃供應商合約建檔。</div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">9. 券類管理</div>
+        <div class="module-desc">紙本及電子禮券/商品券/提貨券之發行、領用、退回、現場/人工核銷、防偽防重複核銷與<span class="highlight">銀行履約信託</span>管理。</div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>鐵律共識：</strong>「1. POS」與「2. 專櫃合約」在營運上為<strong>連體嬰</strong>。專櫃無合法合約，POS 絕對禁止營業；POS 的促銷折扣鍵、櫃位生效起訖日完全受合約條件控制，兩者絕對不可切割給不同廠商。
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <div class="section-title">二、 三大系統選擇方案深度比較評估</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">方案名稱</th>
+          <th style="width: 20%;">模組組合劃分</th>
+          <th style="width: 31%;">方案優點</th>
+          <th style="width: 31%;">方案缺點與維運風險</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <span class="badge badge-opt1">方案一</span><br>
+            <strong>準統包模式</strong><br>
+            (理想主義)
+          </td>
+          <td>
+            • <strong>同一家廠商：</strong><br>1, 2, 3, 4, 5, 6, 8, 9<br>
+            • <strong>獨立廠商：</strong><br>7 (HRM)
+          </td>
+          <td>
+            <strong>1. 究責鏈極端乾淨：</strong> 出問題直接找單一窗口，單一廠商全權負責，零推諉空間。<br>
+            <strong>2. 零跨廠整合成本：</strong> 資料庫內部就地完成交易，無跨系統介面延遲與依賴問題。
+          </td>
+          <td>
+            <span class="risk-tag">1. 市場可選廠商少：</span> 國內扣除觀感不佳之老牌廠商外，無純本土 SI 可接此種全能大案。<br>
+            <span class="risk-tag">2. 喪失中台改造可能：</span> 統包軟體皆為大單體黑盒子，無法配合導入雲端微服務中台與地端防禦架構。
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span class="badge badge-opt2">方案二</span><br>
+            <strong>四群分立模式</strong><br>
+            (實戰黃金平衡點)
+          </td>
+          <td>
+            • <strong>營業核心群：</strong> 1, 2, 6, 9<br>
+            • <strong>會員行銷群：</strong> 3, 4<br>
+            • <strong>財務資產群：</strong> 5, 8<br>
+            • <strong>人資群：</strong> 7
+          </td>
+          <td>
+            <strong>1. 市場供給真實存在：</strong> 1269 找百貨專精（如致富寶）、58 找專業財務系統廠商、34 找專業會員系統廠商。<br>
+            <strong>2. 前線營運抗災強：</strong> 自營庫存與禮券核銷在營業端就地處理，前台 POS 毫秒結帳。<br>
+            <strong>3. 維運責任分明：</strong> 櫃位發票找 1269、點數找 34、傳票找 58。
+          </td>
+          <td>
+            <strong>1. 1269 廠商負擔仍重：</strong> 廠商需同時精通專櫃抽成、自營買賣銷存與禮券信託。<br>
+            <strong>2. 需維運夜間拋轉：</strong> 1269 與 58 之間需維持日結暫存傳票之拋轉對帳機制。
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span class="badge badge-opt3">方案三</span><br>
+            <strong>解耦精選模式</strong><br>
+            (模組極致專業化)
+          </td>
+          <td>
+            • <strong>POS與合約：</strong> 1, 2<br>
+            • <strong>會員禮贈：</strong> 3, 4<br>
+            • <strong>財務資產券類：</strong> 5, 8, 9<br>
+            • <strong>自營銷存：</strong> 6<br>
+            • <strong>人資：</strong> 7
+          </td>
+          <td>
+            <strong>1. 選商門檻最低：</strong> 1,2 廠商只需專精專櫃條件與收銀換開，卸下券類與進銷存包袱。<br>
+            <strong>2. 券類高度財務合規：</strong> 禮券與信託回歸 58 財務 ERP 管轄，審計軌跡最完整。<br>
+            <strong>3. 自營獨立發揮：</strong> 6 可採購專業連鎖零售/WMS 系統，滿足精細生鮮單品管理。
+          </td>
+          <td>
+            <span class="risk-tag">1. 維運地獄：</span> 介面多達 5 家，出事需調閱 Log 釐清責任才能決定找誰，專櫃與現場等不起。<br>
+            <span class="risk-tag">2. 即時連線風險高：</span> POS 結帳若需同步呼叫 5,8,9 驗券、3,4 扣點、6 扣庫存，延遲疊加恐拖死前台。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <div class="section-title">三、 台灣百貨軟體市場供應鏈真實生態</div>
+    <p style="margin-bottom: 15px; font-size: 14.5px;">台灣百貨專櫃抽成（1,2 模組）因特有的「代收代付、包底抽、階梯讓利、預收發票換開」高度特化法規與商業習慣，形成了極端封閉的小型市場：</p>
+    
+    <div style="margin-bottom: 15px;">
+      <h4 style="color: var(--primary); margin-bottom: 6px;">1. 宏誌科技 (RSL) 與 騰雲科技 (Turn Cloud) 的雙雄侷限</h4>
+      <ul>
+        <li><strong>宏誌 (RSL)：</strong> 產業元老，合約與抽成邏輯扎實，但架構偏傳統單體，面對現代雲端微服務與大型數位中台改版包袱沉重。</li>
+        <li><strong>騰雲科技 (6870)：</strong> 近五年承接大量日系（三井、LaLaport）與遠東新案，具備資本市場優勢；但市場也存在維護成本高、客製彈性硬等反饋。</li>
+        <li><strong>關鍵案例警訊：</strong> 新莊指標性大型商場「宏匯廣場」在開幕初期使用騰雲，後續因維運與營運考量，於實務上毅然抽換更換為<strong>致富寶 (ChiefPay)</strong>。此案例證明了騰雲在大型場域並非牢不可破，且致富寶已具備承接大體量全場營業之實戰能力。</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 style="color: var(--primary); margin-bottom: 6px;">2. 其他關鍵廠商之角色邊界定位</h4>
+      <ul>
+        <li><strong>致富寶 (ChiefPay)：</strong> 經宏匯實戰檢驗，在 1（POS/EDC）與 2（合約維運/SOA）已具備與傳統大廠抗衡之實力，為方案二中 1,2,6,9 的首選黑馬。</li>
+        <li><strong>鼎新數智 (Digiwin)：</strong> 全台 ERP 龍頭，但骨子裡為製造與流通供應鏈，<strong>絕不可讓其承接 12 專櫃抽成</strong>，應專注於 5（財務總帳）與 8（請採驗資產）。</li>
+        <li><strong>宣揚電腦 (JabezPOS)：</strong> 專長為連鎖品牌門市、專櫃品牌前台及餐飲 POS，並無大型百貨商場「全場數百櫃包底抽成合約主系統」之近期實績。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <div class="section-title">四、 多中台架構落地可行性與戰略推演</div>
+    
+    <div class="callout callout-warning">
+      <strong>架構落地的先決條件：</strong><br>
+      中台架構絕非「外掛」，而是異質系統解耦與跨廠調度的核心樞紐。<strong>方案一（統包大單體）在現實中完全無法落實多中台架構</strong>；唯有採行<strong>方案二或方案三</strong>，自建之「業務中台層」與「全域 API Gateway」才具備存在的土壤與戰略價值。
+    </div>
+
+    <h4 style="color: var(--primary); margin: 15px 0 8px 0;">1. 依據架構圖之四大防禦核心</h4>
+    <ol>
+      <li><strong>地端 Local Gateway + SQLite 離線韌性：</strong> 各分店部署本地 Gateway 與 SQLite，發票字軌由雲端「發票中台」預先下發，結帳開票本地即時完成，再非同步拋轉雲端。外網斷線時前台營業零受阻。</li>
+      <li><strong>全域 API Gateway + WAF 統一權責邊界：</strong> 外部所有 POS、APP、EC 連線均經 Gateway 驗證 Token 並產出 Trace-ID 稽核日誌。維運出問題時調閱 Log 儀表板，30 秒內精確鎖定出事之廠商模組。</li>
+      <li><strong>傳票中台的解耦緩衝價值：</strong> 介於百貨營運模組與鼎新 ERP 之間，專責將抽成、自營、券類核銷轉化為會計暫存傳票，保護後端財務帳目純淨，不受前台頻繁促銷活動干擾。</li>
+      <li><strong>數據中台隔離 OLTP 與 OLAP：</strong> 線上 Transaction DB 僅負責即時交易；報表、BI 工具、AI 應用中台（LLM/ML）全向數據中台取數，徹底免除分析查詢鎖死線上營運的風險。</li>
+    </ol>
+  </div>
+
+  <!-- Section 5: NEW - 中台精神與規劃實施原則 -->
+  <div class="section">
+    <div class="section-title">五、 中台規劃的核心精神、主導權限與實施戰略</div>
+    
+    <div class="callout-success callout">
+      <strong>中台的核心治理哲學：</strong><br>
+      <strong>「規格自主掌權，實作交鑰匙外包。」</strong><br>
+      商場絕不能把中台規格制定權外放給任何單一廠商，也不必為了做中台而盲目招募龐大的內部開發團隊。CIO / IT 部門掌握中台大腦與規格制定權，工程實作則外包委託專業軟體商按圖施工，商場牢牢持有全套原始碼與主數據主權。
+    </div>
+
+    <div class="strategy-box">
+      <div class="strategy-title">1. 主導權歸屬：為什麼必須由內部 CIO / IT 絕對主導？</div>
+      <ul>
+        <li><strong>利益衝突迴避：</strong> 軟體商受限於自身產品利益，若由廠商主導規格，必會把中台定義成其自家產品的延伸黑盒子，扼殺未來抽換廠商的彈性。</li>
+        <li><strong>掌握數位主權：</strong> 中台是商場的神經中樞。誰制定了 API Contract、驗證機制、資料字典與稽核規則，誰才是商場未來十年的真正主導者。</li>
+        <li><strong>業務 Domain 的不可替代性：</strong> 百貨專櫃包底抽成、發票換開、贈品兌換、禮券信託等特化業務邏輯，僅有親歷現場的內部 IT 與營運團隊才能精準定義。</li>
+      </ul>
+    </div>
+
+    <div class="strategy-box">
+      <div class="strategy-title">2. 外包實作戰略：如何落實「規格在內、編碼在外」？</div>
+      <ul>
+        <li><strong>精簡內部編制：</strong> 內部 IT 團隊專注於架構治理、系統分析 (SA)、資安防禦與專案驗收；將大量的 API 編碼、微服務建置與前端串接外包給具備 AWS/雲端實力之專業 SI 團隊。</li>
+        <li><strong>原始碼所有權 (Code Ownership) 條款：</strong> 外包合約必須白紙黑字載明：中台系統之「全套原始碼、架構手冊、資料庫綱要 (Schema)、CI/CD 部署腳本」之智慧財產權完全歸屬商場所有，確保任何時期皆可隨時更換維護廠商。</li>
+        <li><strong>合約約束與標準規格綁定：</strong> 將《商場中台 API 接入與遵循手冊》直接作為採購合約附件，要求所有業務模組商（1269 廠商、34 MarTech、58 鼎新）必須無條件支援甲方中台規格。</li>
+      </ul>
+    </div>
+
+    <div class="strategy-box">
+      <div class="strategy-title">3. CIO / IT 必須死守的五大中台工程防線</div>
+      <ol>
+        <li><strong>契約先行 (API First)：</strong> 廠商進場前必須先經內部架構師簽核 OpenAPI 3.0 / Swagger 規格書，明確輸入輸出參數與錯誤代碼 (Error Codes)。</li>
+        <li><strong>全鏈路 Trace-ID 與統一日誌：</strong> 所有 Request 強制攜帶 `X-Trace-ID` 並貫穿全域 API Gateway 與各大中台，確保出問題時調閱 Log 儀表板，30 秒內查出故障來源。</li>
+        <li><strong>高併發冪等性防護 (Idempotency)：</strong> 涉及扣款、發票、扣點與券類核銷之 API，必須實作冪等鍵，防止網路逾時重試造成重複交易。</li>
+        <li><strong>前線非同步與熔斷降級 (Circuit Breaker)：</strong> 會員扣點與傳票生成強制走非同步佇列；當雲端中台延遲時，自動觸發降級策略，保證前台 POS 毫秒結帳不停擺。</li>
+        <li><strong>高可用容器化與自動化容災：</strong> 中台服務全面容器化 (Docker/ECS)，納入 AWS 跨可用區 (AZ-B / Multi-AZ) 與 S3 跨區冷備份體系，落實 RPO ≈ 0、RTO &lt; 1~3 分鐘之營運持續防禦。</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer>
+    <p>內部評估文件 • 零售商場資訊架構選型專案 • 2026 年</p>
+  </footer>
+</div>
+
+</body>
+</html>

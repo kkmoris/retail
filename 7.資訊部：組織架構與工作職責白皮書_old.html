@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>組織架構與工作職責白皮書</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #2b6cb0;
+            margin-top: 30px;
+            border-left: 4px solid #3182ce;
+            padding-left: 10px;
+        }
+        h3 {
+            color: #2c5282;
+            margin-top: 20px;
+        }
+        p, li {
+            font-size: 15px;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        .ascii-box {
+            font-family: monospace;
+            background-color: #edf2f7;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 13px;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            text-align: center;
+        }
+        .highlight {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+/* 瀏覽器播放與列印全域浮水印：陳勇至 (Moris) 規劃 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none; /* 穿透點擊，完全不干擾滑鼠點選與選取 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'><text x='30' y='120' fill='%231e3a8a' fill-opacity='0.08' font-size='18' font-weight='600' font-family='sans-serif' transform='rotate(-25 160 110)'>陳勇至 (Moris) 規劃</text></svg>");
+  background-repeat: repeat;
+}
+@media print {
+  body::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>環球資訊部：組織架構與工作職責白皮書</h1>
+        
+        <h2>一、 組織架構總覽（精實鐵三角 + 行政中樞）</h2>
+        <p>資訊部維持精實編制，不設立冗員。對外實施實體硬體外包，對內實施總部中樞掌控。整體架構設立獨立資安防線，並配置主管助理兼顧行政與 ISMS 合規：</p>
+        
+        <div class="ascii-box">
+                     【資訊主管 (CIO/CTO)】
+                                │
+                  ┌─────────────┴─────────────┐
+                  │【主管助理 / ISMS 管理專員】│
+                  └─────────────┬─────────────┘
+         ┌──────────────────────┼──────────────────────┐
+         ▼                      ▼                      ▼
+【基礎設施維運組 (Infra)】 【軟體應用組 (Software)】   【資訊安全組 (Security)】
+• 網管與伺服器維運        • 業務核心邏輯與查案      • 資安防護與弱點掃描
+• 備份與災難復原(DR)      • 外包軟體監督與 UAT      • 個資合規與資安事件應變
+        </div>
+        <p style="text-align: center; font-size: 13px; color: #666;"><em>(註：全體同仁落實「全員皆客服（SPOC）」與主次兼任制，一般問題共擔、專業問題主責)</em></p>
+
+        <h2>二、 各組別與核心角色職責</h2>
+
+        <h3>1. 主管助理暨 ISMS 管理專員（行政中樞）</h3>
+        <ul>
+            <li><strong>ISMS 與文件合規</strong>：擔任 ISO / ISMS 文件的版本控管與中樞窗口，定期追蹤弱點修復表、資產清冊，並主導外部稽核的資料準備與缺失追蹤。</li>
+            <li><strong>主管參謀與文書作業</strong>：負責部門重大會議記錄、IT 預算執行追蹤、採購合約用印與外包請款初審，全面解放主管心力。</li>
+            <li><strong>機動跨組支援</strong>：當跨組專案或突發行政需求吃緊時，提供彈性的跨組機動支援。</li>
+        </ul>
+
+        <h3>2. 基礎設施維運組 (Infra 組)</h3>
+        <ul>
+            <li><strong>核心定位</strong>：專責總部與全館網路、伺服器及數據備份，不直接處理分店終端硬體維修。</li>
+            <li><strong>網管與基礎維運</strong>：負責總部機房核心網路、交換機（Core Switch）、防火牆、對外專線、分店 Wi-Fi 訊號。</li>
+            <li><strong>伺服器與 OA 系統</strong>：維護 AD 網域、M365/Email、內部檔案伺服器、虛擬化主機（VMware/Hyper-V）。</li>
+            <li><strong>備份與災難復原（DR 鐵律）</strong>：牢牢掌握全系統（含外包系統）的資料庫備份與 VM 快照（Snapshot）主權。</li>
+            <li><strong>外包硬體 SLA 監督</strong>：管理分店 POS、EDC 等硬體維護外包廠商，稽核到場時效與設備資產清冊。</li>
+        </ul>
+
+        <h3>3. 軟體應用組 (Software 組)</h3>
+        <ul>
+            <li><strong>核心定位</strong>：專責商場核心業務、外包軟體管理、查案鑑識與總部測試驗證。</li>
+            <li><strong>業務核心與廠商對接</strong>：掌控 POS 交易流、專櫃抽成計算邏輯、日/月結帳務與各類行銷/金流系統串接。</li>
+            <li><strong>高階查案與鑑識（核心能力）</strong>：具備 SQL 查詢與 Log 分析能力，出包時第一時間透過數據定位問題，拒絕外包廠商甩鍋。</li>
+            <li><strong>測試環境與變更管控（Sandbox & UAT）</strong>：建立測試台，嚴格落實外包軟體更新前的 UAT 測試、檔期前 7 天系統凍結（Freeze Period）與 Rollback 機制。</li>
+        </ul>
+
+        <h3>4. 資訊安全組 (Security 組) —— 企業營運的煞車皮與護城河</h3>
+        <ul>
+            <li><strong>核心定位</strong>：獨立於日常維運與開發之外，專責資安防禦、弱點把關與個資法規合規。</li>
+            <li><strong>基礎與端點資安防護</strong>：管理防火牆策略、WAF、入侵偵測及全企業端點資安防護（EDR），防止勒索軟體入侵。</li>
+            <li><strong>漏洞掃描與外包程式審查</strong>：定期對總部系統與外部 API 進行弱點掃描；嚴格審查外包廠商交付的程式碼與 Patch。</li>
+            <li><strong>個資隱私與支付合規（PCI-DSS）</strong>：確保會員個資與刷卡交易大數據的安全加密與調閱權限控管。</li>
+            <li><strong>資安一票否決權（Red Line）</strong>：<strong>「未通過資安弱掃與合規審查的系統，絕對不准上線（Production）」</strong>，由資訊主管親自背書扛壓。</li>
+        </ul>
+
+        <h2>三、 團隊運作與人力配置核心原則</h2>
+        <ol>
+            <li><strong>主次負責制（Primary & Secondary Ownership）</strong>：
+                <ul>
+                    <li><strong>消除單點故障（SPOF）</strong>：避免「一人請假、系統停擺」的僵局。</li>
+                    <li><strong>工作占比分明</strong>：每位工程師配置明確的主責領域（佔 70% 深度）與次要支援領域（佔 30% 廣度）。</li>
+                    <li><strong>分層處理機制</strong>：全體同仁皆可處理第一線一般性、基礎性問題；遇到深水區的專業技術障礙時，再精準交由該領域的「主要負責人（Primary Owner）」出手。</li>
+                </ul>
+            </li>
+            <li><strong>服務申請與派工機制（無單不做）</strong>：
+                <ul>
+                    <li>全面透過 BPM 系統或實體紙本單進行輕量化簽核，拒絕 Line 私訊與口頭交辦。</li>
+                    <li><strong>全員皆客服（SPOC）</strong>：工程師輪流或彈性接聽收單，確認問題屬性後在系統內快速轉派。</li>
+                </ul>
+            </li>
+            <li><strong>安全防線與 On-call 守夜人機制</strong>：
+                <ul>
+                    <li>總部人員維持正常作息，保障身心與留任率。</li>
+                    <li>軟體組與資安組實施輪值表。非當週值班人員下班不受干擾；當週值班人員僅針對影響營運的重大異常（P0/P1）進行深夜遠端支援或指揮外包廠商，並享有對應津貼與補休配套。</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>
